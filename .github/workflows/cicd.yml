@@ -1,24 +1,27 @@
-name: CI-CD Pipeline
+name: CI/CD Demo
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: self-hosted
-
+  deploy:
+    runs-on: ubuntu-latest
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Build Docker Image
-      run: docker build -t cicd-demo .
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd ~/cicd-demo
+            git pull origin main
+            docker build -t cicd-demo .
+            docker stop cicd-demo || true
+            docker rm cicd-demo || true
+            docker run -d --name cicd-demo -p 80:80 cicd-demo
 
-    - name: Success Message
-      run: echo "Pipeline Successful"
-
-      # (Optional) Run container test
-      - name: Run container
-        run: docker run --rm -d -p 8080:80 my-html-app
