@@ -20,7 +20,7 @@ jobs:
           script: |
             cd ~/cicd-demo
             git pull origin main
-            docker build -t cicd-demo .
+            docker build --no-cache -t cicd-demo .
             docker stop cicd-demo || true
             docker rm cicd-demo || true
             docker run -d --name cicd-demo -p 80:80 cicd-demo
