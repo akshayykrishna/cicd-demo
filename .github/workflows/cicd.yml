@@ -1,27 +1,31 @@
-name: CI/CD Demo
+name: CI/CD Deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Deploy to VM
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
+            if [ ! -d "~/cicd-demo" ]; then
+              git clone <your-repo-url> ~/cicd-demo
+            fi
             cd ~/cicd-demo
             git pull origin main
-            docker build --no-cache -t cicd-demo .
             docker stop cicd-demo || true
             docker rm cicd-demo || true
+            docker build --no-cache -t cicd-demo .
             docker run -d --name cicd-demo -p 80:80 cicd-demo
-
