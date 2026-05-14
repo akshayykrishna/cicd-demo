@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             if [ ! -d "~/cicd-demo" ]; then
-              git clone <your-repo-url> ~/cicd-demo
+              git clone https://github.com/akshayykrishna/cicd-demo.git
             fi
             cd ~/cicd-demo
             git pull origin main
