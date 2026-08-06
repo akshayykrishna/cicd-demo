@@ -29,3 +29,5 @@ jobs:
             docker rm cicd-demo || true
             docker build --no-cache -t cicd-demo .
             docker run -d --name cicd-demo -p 80:80 cicd-demo
+            sleep 5
+            curl http://localhost
